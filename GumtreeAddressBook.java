@@ -9,6 +9,16 @@ import java.util.TreeSet;
 public class GumtreeAddressBook {
 
     private class Person {
+        private final String  name_;
+        private final boolean sex_;
+        
+        Person(String name, boolean sex) {
+            name_ = name;
+            sex_  = sex;
+        }
+        
+        String  getName() { return name_; }
+        boolean getSex()  { return sex_;  }
         
     }
     
