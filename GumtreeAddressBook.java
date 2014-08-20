@@ -2,6 +2,7 @@ package com.aqd.gumtreeaddressbook;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.Scanner;
 import java.util.TreeSet;
 
@@ -11,18 +12,25 @@ import java.util.TreeSet;
  */
 public class GumtreeAddressBook {
 
-    private class Person {
+    private class Person implements Comparable<Person> {
         private final String  name_;
         private final boolean sex_; /* 1- Male, 0 - Female */
+        private final Date    birthdate_;
         
-        Person(String name, boolean sex) {
-            name_ = name;
-            sex_  = sex;
+        Person(String name, boolean sex, Date birthdate) {
+            name_      = name;
+            sex_       = sex;
+            birthdate_ = birthdate;
         }
         
-        String  getName() { return name_; }
-        boolean getSex()  { return sex_;  }
-        
+        String  getName()      { return name_; }
+        boolean getSex()       { return sex_;  }
+        Date    getBirthdate() { return birthdate_; }
+
+        @Override
+        public int compareTo(Person t) {
+            return birthdate_.compareTo(t.getBirthdate());
+        }
     }
     
     public void readFile() throws IOException {
