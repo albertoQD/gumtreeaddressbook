@@ -2,6 +2,8 @@ package com.aqd.gumtreeaddressbook;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
 import java.util.TreeSet;
@@ -11,27 +13,11 @@ import java.util.TreeSet;
  * @author Alberto Quintero Delgado
  */
 public class GumtreeAddressBook {
-
-    private class Person implements Comparable<Person> {
-        private final String  name_;
-        private final boolean sex_; /* 1- Male, 0 - Female */
-        private final Date    birthdate_;
-        
-        Person(String name, boolean sex, Date birthdate) {
-            name_      = name;
-            sex_       = sex;
-            birthdate_ = birthdate;
-        }
-        
-        String  getName()      { return name_; }
-        boolean getSex()       { return sex_;  }
-        Date    getBirthdate() { return birthdate_; }
-
-        @Override
-        public int compareTo(Person t) {
-            return birthdate_.compareTo(t.getBirthdate());
-        }
-    }
+    
+    final static String FILE_ = "/home/ajqd/people.txt";
+    /* BST - O (log(N)) for insertion and lookup */
+    private TreeSet<Person> people_;
+    
     
     public void readFile() throws IOException {
         Scanner fileScanner = new Scanner(Paths.get(FILE_));
@@ -53,14 +39,31 @@ public class GumtreeAddressBook {
                                             .trim()
                                             .equalsIgnoreCase("male"));
             
-            // Add it to the TreeSet
-            
+            if (!lineScanner.hasNext()) continue;
+            try {
+                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yy");
+                Date personBirthdate = format.parse(lineScanner.next().trim());
+                
+                /* As it is a tree, it keep the objects ordered */
+                people_.add(new Person(personName, personSex, personBirthdate));
+            } catch (ParseException ex) {
+                System.out.println("ERROR: Cannot parse the birthdate");
+            }
         }
     }
     
-    final static String FILE_ = "/home/ajqd/people.txt";
-    /* BST - O (log(N)) for insertion and lookup */
-    private TreeSet<Person> people_;
+    public int countBySex(boolean sex) {
+        int retVal = 0;
+        for (Person p: people_) {
+            retVal += (p.getSex() == sex) ? 1 : 0;
+        }
+        
+        return retVal;
+    }
+    
+    public Person getOldest()   { return people_.first(); }
+    
+    public Person getYoungest() { return people_.last(); }
     
     /**
      * @param args the command line arguments
@@ -69,6 +72,11 @@ public class GumtreeAddressBook {
     public static void main(String[] args) throws IOException {
         GumtreeAddressBook app = new GumtreeAddressBook();
         app.readFile();
+        Person p1 = app.getOldest();
+        Person p2 = app.getYoungest();
+        
+        System.out.println("The oldest person is: " + p1.getName());
+        System.out.println("The youngest person is: " + p2.getName());
+        System.out.println("The number of males is: " + Integer.toString(app.countBySex(true)));
     }
-    
 }
